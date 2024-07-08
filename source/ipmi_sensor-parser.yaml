@@ -1,0 +1,13 @@
+name: ipmi_sensor
+tests:
+- idrac.example.com,5,Ambient Temp,Temperature,Nominal,15.00,C,'OK'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  // by: bjorn.graabek@crowdstrike.com
+
+  parsecsv(@rawstring, columns=[ipmiHost,sensorNumber,Name,Type,State,Reading,Units,Event]) |
+  regex("^'(?<Event>.*)'", field=Event) | // removing quotes around event text
+
+  drop(sensorNumber) // IPMI sensor number, remove this line if you need the field
+tagFields: []

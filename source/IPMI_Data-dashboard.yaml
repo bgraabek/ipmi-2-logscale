@@ -1,0 +1,200 @@
+name: IPMI Data
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  8682ca6c-44b8-4f64-ae17-356b3fbb8c2a:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #type=ipmi_sensor State!=Nominal
+      | ipmiHost=?ipmiHostToken
+      | table([@timestamp,ipmiHost,Name,Type,State,Reading,Units,Event])
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Sensor reporting non-nominal state
+    isLive: false
+    type: query
+  87dfd02c-df52-4ec4-bf3f-88df77c95c96:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      #type = "ipmi_sensor" Name = "Ambient Temp"
+      | ipmiHost=?ipmiHostToken
+      | timechart(span=5min, function=max(Reading))
+    end: now
+    start: 1d
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+      horizontalPlotLineLabel: Warning
+      plY: 8
+    visualization: time-chart
+    title: Ambient temperature
+    isLive: false
+    type: query
+  b56f81e3-87ca-4f89-9aa4-3370957a1f38:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      // The 'tail' statement means only the last 5 fan readings are shown. If your servers have more than 5 fans, change this.
+      #type = "ipmi_sensor" Units=RPM
+      | ipmiHost=?ipmiHostToken
+      | tail(5)
+      | table([Name, Reading])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Latest Fan RPM
+    isLive: false
+    type: query
+  b9e2c7ba-9074-4cd9-8173-87a5f7daf4d3:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #type = "ipmi_sensor" Name = "Ambient Temp"
+      | ipmiHost=?ipmiHostToken
+      | timechart(function=max(Reading))
+    end: now
+    start: 1d
+    width: 4
+    options:
+      sparkline: false
+      color-method: threshold
+      suffix: ''
+      sparkline-zero: true
+      yAxisTitle: Temperature (celsius)
+      use-colorised-thresholds: true
+      value-format: raw
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 47
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 42
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: 8
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 3
+      trend: true
+      last-bucket: exclude
+      decimal-places: 2
+    visualization: single-value
+    title: Latest ambient temperature
+    isLive: false
+    type: query
+  d631e62d-e691-4fc4-b896-77f609c1a1ea:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      #type = "ipmi_sensor" Units = W
+      | ipmiHost=?ipmiHostToken
+      | timechart(function=max(Reading))
+    end: now
+    start: 1d
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 150
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 125
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: 110
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      decimal-places: 2
+      sparkline: false
+      color-method: threshold
+      suffix: ''
+      sparkline-zero: true
+      yAxisTitle: Power use in Watts
+      use-colorised-thresholds: true
+      value-format: metric
+      default:
+        bg: inherit
+        txt: var(--single-value-warning-text-color)
+    visualization: single-value
+    title: Latest Power Use
+    isLive: false
+    type: query
+  d18e8e63-18f9-4f34-9b76-ee0a91a97b54:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      #type = "ipmi_sensor" Units = W
+      | ipmiHost=?ipmiHostToken
+      | timechart(series=Type, span=5min, function=max(Reading))
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      yAxisUnit: ''
+      legend: false
+      horizontalPlotLineLabel: ''
+      connect-points: false
+      yAxisTitle: Watts
+      plotType: line
+      show-utc: false
+      imputation: none
+    visualization: time-chart
+    title: Power Use
+    isLive: false
+    type: query
+  078b6722-b0e7-4071-a407-446f9d22c8f9:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      #type = "ipmi_sensor" Units=RPM
+      | ipmiHost=?ipmiHostToken
+      | timechart(series=Name, span=5min, function=max(Reading))
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      plY: 720
+      horizontalPlotLineLabel: Minimum
+      connect-points: false
+      yAxisTitle: RPM
+      plotType: line
+      show-utc: true
+      mn: 700
+      imputation: none
+    visualization: time-chart
+    title: Fan RPM
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
